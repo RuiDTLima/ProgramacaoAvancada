@@ -1,6 +1,6 @@
 package ist.meic.pa.FunctionalProfiler;
 
-public class FunctionalCounter implements Counter {
+public class FunctionalCounter extends  abc implements Counter {
     int i;
 
     public FunctionalCounter(int start) {
@@ -13,5 +13,10 @@ public class FunctionalCounter implements Counter {
 
     public Counter advance() {
         return new FunctionalCounter(i + 1);
+    }
+
+    @Override
+    public void a() {
+        i = i + 1;
     }
 }

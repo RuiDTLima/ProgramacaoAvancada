@@ -20,13 +20,7 @@ public class WithFunctionalProfiler {
         classLoader.addTranslator(pool, translator);
         classLoader.run(className, arguments);
 
-        profiler(ctClass, arguments);
-
         ctClass.writeFile();
-    }
-
-    private static void profiler(CtClass ctClass, String[] arguments) {
-
-        System.out.println(ctClass.getRefClasses());
+        ctClass.writeFile("C:\\Users\\rui_l\\Ambiente de Trabalho");
     }
 }

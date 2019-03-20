@@ -12,7 +12,14 @@ public class ImperativeCounter implements Counter {
     }
 
     public Counter advance() {
-        i = i+1;
+        for (int j = 0; j < 10; j++) {
+            if (j % 2 == 0) {
+                System.out.println("Write in if.");
+                //i = i + 1;
+            }
+            System.out.println("write out of if");
+            i = i + 1;
+        }
         return this;
     }
 }
