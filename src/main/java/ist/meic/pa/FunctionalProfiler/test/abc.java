@@ -1,4 +1,4 @@
-package ist.meic.pa.FunctionalProfiler;
+package ist.meic.pa.FunctionalProfiler.test;
 
 public abstract class abc {
     int i = 0;

@@ -1,5 +1,16 @@
 plugins {
     id 'java'
+    id 'application'
+}
+
+mainClassName = 'WithFunctionalProfiler'
+
+jar {
+    manifest {
+        attributes (
+                'Main-Class': 'ist.meic.pa.FunctionalProfiler.WithFunctionalProfiler'
+        )
+    }
 }
 
 group 'ist.meic.pa'
