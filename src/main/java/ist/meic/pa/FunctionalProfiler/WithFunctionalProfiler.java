@@ -3,6 +3,9 @@ package ist.meic.pa.FunctionalProfiler;
 import javassist.*;
 
 public class WithFunctionalProfiler {
+    private static final String TOTAL_READS_WRITES = "Total reads: %d Total writes: %d";
+    private static final String CLASS_COUNTERS_OUTPUT = "class %s -> reads: %d writes: %d";
+
     public static void main(String[] args) {
         String className = args[0];
 
@@ -34,7 +37,11 @@ public class WithFunctionalProfiler {
             System.exit(3);
         }
 
-        System.out.println("Total reads: " + Register.getTotalReader() + " Total writes: " + Register.getTotalWriter());
-        Register.getCounters().forEach((s, readWriteCounter) -> System.out.println(String.format("class %s -> reads: %d writes: %d", s, readWriteCounter.getReader(), readWriteCounter.getWriter())));
+        System.out.println(String.format(TOTAL_READS_WRITES, Register.getTotalReader(), Register.getTotalWriter()));
+        Register.getCounters().forEach(WithFunctionalProfiler::printOutput);
+    }
+
+    private static void printOutput(String className, ReadWriteCounter readWriteCounter) {
+        System.out.println(String.format(CLASS_COUNTERS_OUTPUT, className, readWriteCounter.getReader(), readWriteCounter.getWriter()));
     }
 }

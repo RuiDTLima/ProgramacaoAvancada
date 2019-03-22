@@ -3,8 +3,14 @@ package ist.meic.pa.FunctionalProfiler;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+/**
+ * This maintains a register of all ReadWriteCounter corresponding to all classes as well as the total reads and writes.
+ */
 public class Register {
-    private final static SortedMap<String, ReadWriteCounter> counters = new TreeMap<>();
+    /**
+     * It is used a TreeMap so that all the keys are order lexicographic.
+     */
+    private static final SortedMap<String, ReadWriteCounter> counters = new TreeMap<>();
     private static int totalReader = 0, totalWriter = 0;
 
     public static SortedMap<String, ReadWriteCounter> getCounters() {
@@ -26,7 +32,6 @@ public class Register {
             counters.put(className, new ReadWriteCounter(1, 0));
         totalReader++;
     }
-
 
     public static void addWriter(String className) {
         if (counters.containsKey(className))
