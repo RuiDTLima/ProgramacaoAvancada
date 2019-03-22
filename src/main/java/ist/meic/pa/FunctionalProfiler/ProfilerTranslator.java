@@ -34,5 +34,11 @@ public class ProfilerTranslator implements Translator {
                         fa.replace(String.format(INCR_READER_TEMPLATE, className));
                 }
             });
+
+        /*try {
+            ctClass.writeFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }*/ // TODO to remove
     }
 }
