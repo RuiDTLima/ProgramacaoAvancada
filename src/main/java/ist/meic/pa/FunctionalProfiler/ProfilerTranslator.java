@@ -4,6 +4,7 @@ import javassist.*;
 import javassist.expr.ExprEditor;
 import javassist.expr.FieldAccess;
 
+import java.io.IOException;
 import java.util.function.Predicate;
 
 public class ProfilerTranslator implements Translator {
@@ -11,13 +12,13 @@ public class ProfilerTranslator implements Translator {
      * This is the code template that replaces a field write. It maintains the original code with the instruction
      * proceed.
      */
-    private static final String INCR_WRITER_TEMPLATE = "$_ = $proceed($$); ist.meic.pa.FunctionalProfiler.Register.addWriter(\"%s\");";
+    private static final String INCR_WRITER_TEMPLATE = "$_ = $proceed($$); ist.meic.pa.FunctionalProfiler.Register.addWriter($0.getClass().getName());";
 
     /**
      * This is the code template that replaces a field read. It maintains the original code with the instruction
      * proceed.
      */
-    private static final String INCR_READER_TEMPLATE = "$_ = $proceed($$); ist.meic.pa.FunctionalProfiler.Register.addReader(\"%s\");";
+    private static final String INCR_READER_TEMPLATE = "$_ = $proceed($$); ist.meic.pa.FunctionalProfiler.Register.addReader($0.getClass().getName());";
 
     public void start(ClassPool pool) throws NotFoundException, CannotCompileException {
     }
@@ -41,7 +42,7 @@ public class ProfilerTranslator implements Translator {
         for (CtConstructor ctConstructor : ctClass.getDeclaredConstructors()) {
             ctConstructor.instrument(new ExprEditor() {
                 public void edit(FieldAccess fa) throws CannotCompileException {
-                    replaceFieldAccess(fa, fieldAccess -> fieldAccess.isStatic() || (fieldAccess.getClassName().equals(className) && fieldAccess.isWriter()));
+                    replaceFieldAccess(fa, true, fieldAccess -> fieldAccess.isStatic() || (fieldAccess.getClassName().equals(className) && fieldAccess.isWriter()));
                 }
             });
         }
@@ -49,9 +50,15 @@ public class ProfilerTranslator implements Translator {
         for (CtMethod ctMethod : ctClass.getDeclaredMethods())
             ctMethod.instrument(new ExprEditor() {
                 public void edit(FieldAccess fa) throws CannotCompileException {
-                    replaceFieldAccess(fa, FieldAccess::isStatic);
+                    replaceFieldAccess(fa, false, FieldAccess::isStatic);
                 }
             });
+
+        try {
+            ctClass.writeFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -63,12 +70,12 @@ public class ProfilerTranslator implements Translator {
      * @param fieldAccessPredicate Predicate to remove unwanted FieldAccess fa
      * @throws CannotCompileException Exception rethrown from the method replace of fa
      */
-    private static void replaceFieldAccess(FieldAccess fa, Predicate<FieldAccess> fieldAccessPredicate) throws CannotCompileException {
+    private static void replaceFieldAccess(FieldAccess fa, boolean isConstructor, Predicate<FieldAccess> fieldAccessPredicate) throws CannotCompileException {
         if (fieldAccessPredicate.test(fa))
             return;
         if (fa.isWriter())
-            fa.replace(String.format(INCR_WRITER_TEMPLATE, fa.getClassName()));
+            fa.replace(INCR_WRITER_TEMPLATE);
         else
-            fa.replace(String.format(INCR_READER_TEMPLATE, fa.getClassName()));
+            fa.replace(INCR_READER_TEMPLATE);
     }
 }

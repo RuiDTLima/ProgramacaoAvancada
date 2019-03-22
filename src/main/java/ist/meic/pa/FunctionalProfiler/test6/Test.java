@@ -9,6 +9,5 @@ public class Test {
 
     // Expected:
     // Total reads 0 Total writes 3
-    // (package name).Person -> reads 0 writes 2
-    // (package name).Student -> reads 0 writes 1
+    // (package name).Student -> reads 0 writes 3
 }
