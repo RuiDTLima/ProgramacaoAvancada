@@ -1,4 +1,4 @@
-package ist.meic.pa.FunctionalProfiler.test2;
+package ist.meic.pa.FunctionalProfiler.test1;
 
 public class Test {
 
@@ -9,5 +9,5 @@ public class Test {
 
     // Expected:
     // Total reads 0 Total writes 1
-    // (package name).Student -> reads 0 writes 0
+    // (package name).Student -> reads 0 writes 1
 }

@@ -1,6 +1,6 @@
 package ist.meic.pa.FunctionalProfiler.test;
 
-public class FunctionalCounter extends  abc implements Counter {
+public class FunctionalCounter extends abc implements Counter {
     int i;
 
     public FunctionalCounter(int start) {
