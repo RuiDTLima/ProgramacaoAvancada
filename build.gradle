@@ -3,12 +3,12 @@ plugins {
     id 'application'
 }
 
-mainClassName = 'WithFunctionalProfiler'
+mainClassName = 'FunctionalProfiler'
 
 jar {
     manifest {
         attributes (
-                'Main-Class': 'ist.meic.pa.FunctionalProfiler.WithFunctionalProfiler'
+                'Main-Class': 'ist.meic.pa.FunctionalProfiler.FunctionalProfiler'
         )
     }
 }

@@ -66,7 +66,7 @@ set CMD_LINE_ARGS=%*
 set CLASSPATH=%APP_HOME%\lib\functionalProfiler.jar;%APP_HOME%\lib\javassist-3.24.1-GA.jar
 
 @rem Execute FunctionalProfiler
-"%JAVA_EXE%" %DEFAULT_JVM_OPTS% %JAVA_OPTS% %FUNCTIONAL_PROFILER_OPTS%  -classpath "%CLASSPATH%" WithFunctionalProfiler %CMD_LINE_ARGS%
+"%JAVA_EXE%" %DEFAULT_JVM_OPTS% %JAVA_OPTS% %FUNCTIONAL_PROFILER_OPTS%  -classpath "%CLASSPATH%" FunctionalProfiler %CMD_LINE_ARGS%
 
 :end
 @rem End local scope for the variables with windows NT shell
