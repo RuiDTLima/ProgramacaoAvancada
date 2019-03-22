@@ -7,6 +7,10 @@ public class WithFunctionalProfiler {
     private static final String CLASS_COUNTERS_OUTPUT = "class %s -> reads: %d writes: %d";
 
     public static void main(String[] args) {
+        if (args.length == 0) {
+            System.out.println("Please specify the class name that contains a main method to analyse.");
+            return;
+        }
         String className = args[0];
 
         String[] arguments = new String[args.length - 1];
