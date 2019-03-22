@@ -17,12 +17,6 @@ public class ProfilerTranslator implements Translator {
         if (ctClass.isInterface())
             return;
 
-        /*if (!ctClass.equals(mainClass)) {
-            mainClass.getField().
-        }*/
-
-        System.out.println(className);
-
         for (CtMethod declaredMethod : ctClass.getDeclaredMethods())
             declaredMethod.instrument(new ExprEditor() {
                 public void edit(FieldAccess fa) throws CannotCompileException {
@@ -34,11 +28,5 @@ public class ProfilerTranslator implements Translator {
                         fa.replace(String.format(INCR_READER_TEMPLATE, className));
                 }
             });
-
-        /*try {
-            ctClass.writeFile();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/ // TODO to remove
     }
 }

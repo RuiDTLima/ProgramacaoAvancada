@@ -22,7 +22,7 @@ public class Register {
         if (counters.containsKey(className))
             counters.get(className).incrementReader();
         else
-            counters.put(className, new ReadWriteCounter());
+            counters.put(className, new ReadWriteCounter(1, 0));
         totalReader++;
     }
 
@@ -31,7 +31,7 @@ public class Register {
         if (counters.containsKey(className))
             counters.get(className).incrementWriter();
         else
-            counters.put(className, new ReadWriteCounter());
+            counters.put(className, new ReadWriteCounter(0, 1));
         totalWriter++;
     }
 }

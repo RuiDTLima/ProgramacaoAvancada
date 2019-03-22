@@ -25,8 +25,5 @@ public class WithFunctionalProfiler {
 
         System.out.println("Total reads " + Register.getTotalReader() + " Total writes " + Register.getTotalWriter());
         Register.getCounters().forEach((s, readWriteCounter) -> System.out.println(s + " reads " + readWriteCounter.getReader() + " writes " + readWriteCounter.getWriter()));
-
-        /*CtClass ctClass = pool.get(className);
-        ctClass.writeFile();*/ // TODO to remove
     }
 }

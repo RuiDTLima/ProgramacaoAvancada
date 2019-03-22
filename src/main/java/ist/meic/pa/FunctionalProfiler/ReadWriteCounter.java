@@ -4,9 +4,9 @@ public class ReadWriteCounter {
     private int reader;
     private int writer;
 
-    public ReadWriteCounter() {
-        this.reader = 0;
-        this.writer = 0;
+    public ReadWriteCounter(int reader, int writer) {
+        this.reader = reader;
+        this.writer = writer;
     }
 
     public int getReader() {
