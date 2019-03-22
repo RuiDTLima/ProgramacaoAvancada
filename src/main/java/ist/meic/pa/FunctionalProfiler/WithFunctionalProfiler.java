@@ -1,12 +1,9 @@
 package ist.meic.pa.FunctionalProfiler;
 
-import javassist.ClassPool;
-import javassist.Loader;
-import javassist.Translator;
+import javassist.*;
 
 public class WithFunctionalProfiler {
-
-    public static void main(String[] args) throws Throwable {
+    public static void main(String[] args) {
         String className = args[0];
 
         String[] arguments = new String[args.length - 1];
@@ -19,10 +16,25 @@ public class WithFunctionalProfiler {
 
         Loader classLoader = new Loader();
         classLoader.delegateLoadingOf("ist.meic.pa.FunctionalProfiler.Register");
-        classLoader.addTranslator(pool, translator);
-        classLoader.run(className, arguments);
+
+        try {
+            classLoader.addTranslator(pool, translator);
+        } catch (NotFoundException | CannotCompileException e) {
+            System.out.println("An error occurred while adding the translator to the classLoader.");
+            System.exit(1);
+        }
+
+        try {
+            classLoader.run(className, arguments);
+        } catch (ClassNotFoundException e) {
+            System.out.println("The class provided could not be found.");
+            System.exit(2);
+        } catch (Throwable throwable) {
+            System.out.println("An error occurred while executing the application.");
+            System.exit(3);
+        }
 
         System.out.println("Total reads: " + Register.getTotalReader() + " Total writes: " + Register.getTotalWriter());
-        Register.getCounters().forEach((s, readWriteCounter) -> System.out.println("class " + s + " -> reads: " + readWriteCounter.getReader() + " writes: " + readWriteCounter.getWriter()));
+        Register.getCounters().forEach((s, readWriteCounter) -> System.out.println(String.format("class %s -> reads: %d writes: %d", s, readWriteCounter.getReader(), readWriteCounter.getWriter())));
     }
 }

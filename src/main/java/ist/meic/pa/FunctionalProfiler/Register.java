@@ -1,12 +1,13 @@
 package ist.meic.pa.FunctionalProfiler;
 
-import java.util.HashMap;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 public class Register {
-    private final static HashMap<String, ReadWriteCounter> counters = new HashMap<>();
+    private final static SortedMap<String, ReadWriteCounter> counters = new TreeMap<>();
     private static int totalReader = 0, totalWriter = 0;
 
-    public static HashMap<String, ReadWriteCounter> getCounters() {
+    public static SortedMap<String, ReadWriteCounter> getCounters() {
         return counters;
     }
 
