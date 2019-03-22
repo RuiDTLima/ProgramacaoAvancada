@@ -1,7 +1,6 @@
 package ist.meic.pa.FunctionalProfiler;
 
 import javassist.ClassPool;
-import javassist.CtClass;
 import javassist.Loader;
 import javassist.Translator;
 
@@ -23,7 +22,7 @@ public class WithFunctionalProfiler {
         classLoader.addTranslator(pool, translator);
         classLoader.run(className, arguments);
 
-        System.out.println("Total reads " + Register.getTotalReader() + " Total writes " + Register.getTotalWriter());
-        Register.getCounters().forEach((s, readWriteCounter) -> System.out.println(s + " reads " + readWriteCounter.getReader() + " writes " + readWriteCounter.getWriter()));
+        System.out.println("Total reads: " + Register.getTotalReader() + " Total writes: " + Register.getTotalWriter());
+        Register.getCounters().forEach((s, readWriteCounter) -> System.out.println("class " + s + " -> reads: " + readWriteCounter.getReader() + " writes: " + readWriteCounter.getWriter()));
     }
 }
