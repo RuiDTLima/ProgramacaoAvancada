@@ -1,4 +1,4 @@
-package ist.meic.pa.FunctionalProfiler.test2;
+package ist.meic.pa.FunctionalProfiler.test3;
 
 public class Test {
 
