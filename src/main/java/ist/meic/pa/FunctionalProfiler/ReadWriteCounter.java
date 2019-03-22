@@ -1,5 +1,8 @@
 package ist.meic.pa.FunctionalProfiler;
 
+/**
+ * This class represents a counter for reads and writes. It is used one instance for every class.
+ */
 public class ReadWriteCounter {
     private int reader;
     private int writer;

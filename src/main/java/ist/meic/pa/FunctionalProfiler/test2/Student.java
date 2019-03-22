@@ -1,5 +1,5 @@
 package ist.meic.pa.FunctionalProfiler.test2;
 
-public class Student extends Person {
+public class Student {
     int mark;
 }
