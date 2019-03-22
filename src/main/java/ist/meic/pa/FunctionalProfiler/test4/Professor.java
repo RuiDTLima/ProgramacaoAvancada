@@ -1,8 +1,8 @@
-package ist.meic.pa.FunctionalProfiler.test3;
+package ist.meic.pa.FunctionalProfiler.test4;
 
 public class Professor {
     void grade(Student t) {
-        t.age = 22;
+        t.setAge(22);
         t.mark = 20;
     }
 }

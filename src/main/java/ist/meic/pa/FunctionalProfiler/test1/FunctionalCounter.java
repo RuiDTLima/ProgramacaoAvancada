@@ -1,4 +1,4 @@
-package ist.meic.pa.FunctionalProfiler.test;
+package ist.meic.pa.FunctionalProfiler.test1;
 
 public class FunctionalCounter extends abc implements Counter {
     int i;
@@ -20,3 +20,4 @@ public class FunctionalCounter extends abc implements Counter {
         i = i + 1;
     }
 }
+//

@@ -8,6 +8,6 @@ public class Test {
     }
 
     // Expected:
-    // Total reads 0 Total writes 1
-    // (package name).Student -> reads 0 writes 1
+    // Total reads 0 Total writes 2
+    // (package name).Student -> reads 0 writes 2
 }
