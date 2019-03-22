@@ -42,7 +42,7 @@ public class ProfilerTranslator implements Translator {
         for (CtConstructor ctConstructor : ctClass.getDeclaredConstructors()) {
             ctConstructor.instrument(new ExprEditor() {
                 public void edit(FieldAccess fa) throws CannotCompileException {
-                    replaceFieldAccess(fa, true, fieldAccess -> fieldAccess.isStatic() || (fieldAccess.getClassName().equals(className) && fieldAccess.isWriter()));
+                    replaceFieldAccess(fa, fieldAccess -> fieldAccess.isStatic() || (fieldAccess.getClassName().equals(className) && fieldAccess.isWriter()));
                 }
             });
         }
@@ -50,15 +50,10 @@ public class ProfilerTranslator implements Translator {
         for (CtMethod ctMethod : ctClass.getDeclaredMethods())
             ctMethod.instrument(new ExprEditor() {
                 public void edit(FieldAccess fa) throws CannotCompileException {
-                    replaceFieldAccess(fa, false, FieldAccess::isStatic);
+                    replaceFieldAccess(fa, FieldAccess::isStatic);
                 }
             });
 
-        try {
-            ctClass.writeFile();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     /**
@@ -70,7 +65,7 @@ public class ProfilerTranslator implements Translator {
      * @param fieldAccessPredicate Predicate to remove unwanted FieldAccess fa
      * @throws CannotCompileException Exception rethrown from the method replace of fa
      */
-    private static void replaceFieldAccess(FieldAccess fa, boolean isConstructor, Predicate<FieldAccess> fieldAccessPredicate) throws CannotCompileException {
+    private static void replaceFieldAccess(FieldAccess fa, Predicate<FieldAccess> fieldAccessPredicate) throws CannotCompileException {
         if (fieldAccessPredicate.test(fa))
             return;
         if (fa.isWriter())
