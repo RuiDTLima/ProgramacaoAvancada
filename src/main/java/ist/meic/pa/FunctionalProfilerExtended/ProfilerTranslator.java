@@ -12,13 +12,13 @@ public class ProfilerTranslator implements Translator {
      * This is the code template that replaces a field write. It maintains the original code with the instruction
      * proceed.
      */
-    private static final String INCR_WRITER_TEMPLATE = "$_ = $proceed($$); ist.meic.pa.FunctionalProfilerExtended.Register.addWriter(\"%s\");";
+    private static final String INCR_WRITER_TEMPLATE = "$_ = $proceed($$); ist.meic.pa.FunctionalProfilerExtended.Register.addWriter($0.getClass().getName(), \"%s\");";
 
     /**
      * This is the code template that replaces a field read. It maintains the original code with the instruction
      * proceed.
      */
-    private static final String INCR_READER_TEMPLATE = "$_ = $proceed($$); ist.meic.pa.FunctionalProfilerExtended.Register.addReader(\"%s\");";
+    private static final String INCR_READER_TEMPLATE = "$_ = $proceed($$); ist.meic.pa.FunctionalProfilerExtended.Register.addReader($0.getClass().getName(), \"%s\");";
 
     public void start(ClassPool pool) throws NotFoundException, CannotCompileException {
     }
@@ -83,7 +83,7 @@ public class ProfilerTranslator implements Translator {
                 })
                 .forEach(ctMethod -> {
                     try {
-                        ctMethod.instrument(instrumentField((fieldAccess, ctField)->
+                        ctMethod.instrument(instrumentField((fieldAccess, ctField) ->
                                 ctField.hasAnnotation(IgnoreInstrumentation.class) || fieldAccess.isStatic()));
                     } catch (CannotCompileException e) {
                         System.out.println(String.format("Cannot instrument the method %S", ctMethod.getName()));
@@ -126,8 +126,8 @@ public class ProfilerTranslator implements Translator {
             return;
 
         if (fa.isWriter())
-            fa.replace(String.format(INCR_WRITER_TEMPLATE, fa.getClassName()));
+            fa.replace(String.format(INCR_WRITER_TEMPLATE, fa.getFieldName()));
         else
-            fa.replace(String.format(INCR_READER_TEMPLATE, fa.getClassName()));
+            fa.replace(String.format(INCR_READER_TEMPLATE, fa.getFieldName()));
     }
 }
