@@ -45,7 +45,7 @@ public class WithFunctionalProfiler {
         Register.getCounters().forEach(WithFunctionalProfiler::printOutput);
     }
 
-    private static void printOutput(String className, FieldInfo fieldInfo) {
-        System.out.println(String.format(CLASS_COUNTERS_OUTPUT, className, fieldInfo.getReader(), fieldInfo.getWriter()));
+    private static void printOutput(String className, ReadWriteCounter readWriteCounter) {
+        System.out.println(String.format(CLASS_COUNTERS_OUTPUT, className, readWriteCounter.getReader(), readWriteCounter.getWriter()));
     }
 }

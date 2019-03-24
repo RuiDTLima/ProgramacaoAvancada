@@ -6,7 +6,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 /**
- * This maintains a register of all FieldInfo corresponding to all classes as well as the total reads and writes.
+ * This maintains a register of all ReadWriteCounter corresponding to all classes as well as the total reads and writes.
  */
 public class Register {
     /**

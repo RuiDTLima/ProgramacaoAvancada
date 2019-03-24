@@ -1,7 +1,6 @@
 package ist.meic.pa.FunctionalProfilerExtended;
 
 import javassist.*;
-
 import java.util.Set;
 
 public class WithFunctionalProfiler {
@@ -56,11 +55,11 @@ public class WithFunctionalProfiler {
                     fieldInfo.setWriter(fieldInfo.getWriter() + fieldInfo2.getWriter());
                     return fieldInfo;
                 }));
+
         System.out.println(String.format(CLASS_COUNTERS_OUTPUT, className, fields.getReader(), fields.getWriter()));
 
         fieldInfos
                 .forEach(fieldInfo ->
-                        System.out.println(String.format(FIELD_COUNTERS_OUTPUT, fieldInfo.getName(), fieldInfo.getReader(), fieldInfo.getWriter())))
-        ;
+                        System.out.println(String.format(FIELD_COUNTERS_OUTPUT, fieldInfo.getName(), fieldInfo.getReader(), fieldInfo.getWriter())));
     }
 }

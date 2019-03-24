@@ -3,15 +3,20 @@ package ist.meic.pa.FunctionalProfilerExtended;
 import javassist.*;
 import javassist.expr.ExprEditor;
 import javassist.expr.FieldAccess;
-
 import java.util.Arrays;
 
 public class ProfilerTranslator implements Translator {
     /**
-     * This is the code template that checks if the instance that belongs to where this code is injected is not equals
-     * to the instance that a field belongs. It maintains the original code with the instruction proceed.
+     * This is the code template that replaces a field writes. It maintains the original code with the instruction
+     * proceed and checks if the field being accessed doesn't belong to a different object instance
      */
     private static final String INCR_WRITER_IN_CONSTRUCTOR_TEMPLATE = "$_ = $proceed($$); if(!this.equals($0)) ist.meic.pa.FunctionalProfilerExtended.Register.addWriter($0.getClass().getName(), \"%s\");";
+
+    /**
+     * This is the code template that replaces a field read. It maintains the original code with the instruction
+     * proceed.
+     */
+    private static final String INCR_READER_IN_CONSTRUCTOR_TEMPLATE = "$_ = $proceed($$); ist.meic.pa.FunctionalProfilerExtended.Register.addReader($0.getClass().getName(), \"%s\");";
 
     /**
      * This is the code template that replaces a field write. It maintains the original code with the instruction
@@ -49,10 +54,15 @@ public class ProfilerTranslator implements Translator {
         }
 
         instrumentConstructor(ctClass);
-
         instrumentsMethod(ctClass);
     }
 
+    /**
+     * Analyse the constructors in <b>ctClass</b> to add the corresponding code template. A constructor will be ignored
+     * if it contains the annotation <i>IgnoreInstrumentation</i>.
+     * @see <a href="ist.meic.pa.FunctionalProfilerExtended.IgnoreInstrumentation">IgnoreInstrumentation</a>
+     * @param ctClass represents the class being analysed.
+     */
     private void instrumentConstructor(CtClass ctClass) {
         Arrays.stream(ctClass.getDeclaredConstructors())
                 .filter(ctConstructor -> !hasIgnoreInstrumentationAnnotation(ctConstructor))
@@ -65,6 +75,12 @@ public class ProfilerTranslator implements Translator {
                 });
     }
 
+    /**
+     * Analyse the methods in <b>ctClass</b> to add the corresponding code template. A method will be ignored
+     * if it contains the annotation <i>IgnoreInstrumentation</i>.
+     * @see <a href="ist.meic.pa.FunctionalProfilerExtended.IgnoreInstrumentation">IgnoreInstrumentation</a>
+     * @param ctClass represents the class being analysed.
+     */
     private void instrumentsMethod(CtClass ctClass) {
         Arrays.stream(ctClass.getDeclaredMethods())
                 .filter(ctMethod -> !hasIgnoreInstrumentationAnnotation(ctMethod))
@@ -86,22 +102,22 @@ public class ProfilerTranslator implements Translator {
         }
     }
 
-    private ExprEditor instrumentFieldInMethod() {
-        return new ExprEditor() {
-            public void edit(FieldAccess fa) throws CannotCompileException {
-                CtField ctField = getField(fa);
-                if (ctField == null) return;
-                replaceFieldAccessInMethod(fa, ctField);
-            }
-        };
-    }
-
     private ExprEditor instrumentFieldInConstructor() {
         return new ExprEditor() {
             public void edit(FieldAccess fa) throws CannotCompileException {
                 CtField ctField = getField(fa);
                 if (ctField == null) return;
                 replaceFieldAccessInConstructor(fa, ctField);
+            }
+        };
+    }
+
+    private ExprEditor instrumentFieldInMethod() {
+        return new ExprEditor() {
+            public void edit(FieldAccess fa) throws CannotCompileException {
+                CtField ctField = getField(fa);
+                if (ctField == null) return;
+                replaceFieldAccessInMethod(fa, ctField);
             }
         };
     }
@@ -117,13 +133,21 @@ public class ProfilerTranslator implements Translator {
         return ctField;
     }
 
+    /**
+     * Check if predicate is true. If so nothing is done. Otherwise the method will replace the code where fa is at.
+     * It will check if fa is writer or reader and replace the code with INCR_WRITER_IN_CONSTRUCTOR_TEMPLATE or
+     * INCR_READER_IN_CONSTRUCTOR_TEMPLATE respectively.
+     *
+     * @param fa FieldAccess that will be replaced
+     * @throws CannotCompileException Exception rethrown from the method replace of fa
+     */
     private void replaceFieldAccessInConstructor(FieldAccess fa, CtField ctField) throws CannotCompileException {
         if (hasIgnoreInstrumentationAnnotation(ctField) || fa.isStatic())
             return;
         if (fa.isWriter())
             fa.replace(String.format(INCR_WRITER_IN_CONSTRUCTOR_TEMPLATE, fa.getFieldName()));
         else
-            fa.replace(String.format(INCR_READER_IN_METHOD_TEMPLATE, fa.getFieldName()));
+            fa.replace(String.format(INCR_READER_IN_CONSTRUCTOR_TEMPLATE, fa.getFieldName()));
     }
 
     /**

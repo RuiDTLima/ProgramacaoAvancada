@@ -6,10 +6,16 @@ import javassist.expr.FieldAccess;
 
 public class ProfilerTranslator implements Translator {
     /**
-     * This is the code template that checks if the instance that belongs to where this code is injected is not equals
-     * to the instance that a field belongs. It maintains the original code with the instruction proceed.
+     * This is the code template that replaces a field writes. It maintains the original code with the instruction
+     * proceed and checks if the field being accessed doesn't belong to a different object instance
      */
     private static final String INCR_WRITER_IN_CONSTRUCTOR_TEMPLATE = "$_ = $proceed($$); if(!this.equals($0)) ist.meic.pa.FunctionalProfiler.Register.addWriter($0.getClass().getName());";
+
+    /**
+     * This is the code template that replaces a field read. It maintains the original code with the instruction
+     * proceed.
+     */
+    private static final String INCR_READER_IN_CONSTRUCTOR_TEMPLATE = "$_ = $proceed($$); ist.meic.pa.FunctionalProfiler.Register.addReader($0.getClass().getName());";
 
     /**
      * This is the code template that replaces a field write. It maintains the original code with the instruction
@@ -56,11 +62,11 @@ public class ProfilerTranslator implements Translator {
                     replaceFieldAccessInMethod(fa);
                 }
             });
-
     }
 
     /**
-     * This method is called when a FieldAccess fa is from a constructor.
+     * This method is called when a FieldAccess fa is done from within a constructor. It will add the corresponding
+     * code template according to whether the FieldAccess is a read or write.
      *
      * @param fa FieldAccess that will be replaced
      * @throws CannotCompileException Exception rethrown from the method replace of fa
@@ -71,11 +77,12 @@ public class ProfilerTranslator implements Translator {
         if (fa.isWriter())
             fa.replace(INCR_WRITER_IN_CONSTRUCTOR_TEMPLATE);
         else
-            fa.replace(INCR_READER_IN_METHOD_TEMPLATE);
+            fa.replace(INCR_READER_IN_CONSTRUCTOR_TEMPLATE);
     }
 
     /**
-     * This method is called when a FieldAccess fa is from a method.
+     * This method is called when a FieldAccess fa is done from within a method. It will add the corresponding
+     * code template according to whether the FieldAccess is a read or write.
      *
      * @param fa FieldAccess that will be replaced
      * @throws CannotCompileException Exception rethrown from the method replace of fa
