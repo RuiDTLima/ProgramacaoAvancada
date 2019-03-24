@@ -1,4 +1,4 @@
-package ist.meic.pa.FunctionalProfiler.testStora.sample0;
+package ist.meic.pa.FunctionalProfilerExtended.testStora.sample0;
 
 interface Counter {
     int value();
