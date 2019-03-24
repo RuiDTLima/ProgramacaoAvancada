@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.util.function.Predicate;
 
 public class ProfilerTranslator implements Translator {
+    private static final String INCR_WRITE_IN_METHOD_TEMPLATE = "$_ = $proceed($$); if(!this.equals($0)) ist.meic.pa.FunctionalProfiler.Register.addWriter($0.getClass().getName());";
+
     /**
      * This is the code template that replaces a field write. It maintains the original code with the instruction
      * proceed.
@@ -42,7 +44,7 @@ public class ProfilerTranslator implements Translator {
         for (CtConstructor ctConstructor : ctClass.getDeclaredConstructors()) {
             ctConstructor.instrument(new ExprEditor() {
                 public void edit(FieldAccess fa) throws CannotCompileException {
-                    replaceFieldAccess(fa, fieldAccess -> fieldAccess.isStatic() || (fieldAccess.getClassName().equals(className) && fieldAccess.isWriter()));
+                    replaceFieldAccessInConstructor(fa, FieldAccess::isStatic);
                 }
             });
         }
@@ -70,6 +72,15 @@ public class ProfilerTranslator implements Translator {
             return;
         if (fa.isWriter())
             fa.replace(INCR_WRITER_TEMPLATE);
+        else
+            fa.replace(INCR_READER_TEMPLATE);
+    }
+
+    private static void replaceFieldAccessInConstructor(FieldAccess fa, Predicate<FieldAccess> fieldAccessPredicate) throws CannotCompileException {
+        if (fieldAccessPredicate.test(fa))
+            return;
+        if (fa.isWriter())
+            fa.replace(INCR_WRITE_IN_METHOD_TEMPLATE);
         else
             fa.replace(INCR_READER_TEMPLATE);
     }
