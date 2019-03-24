@@ -4,23 +4,24 @@ import javassist.*;
 import javassist.expr.ExprEditor;
 import javassist.expr.FieldAccess;
 
-import java.io.IOException;
-import java.util.function.Predicate;
-
 public class ProfilerTranslator implements Translator {
-    private static final String INCR_WRITE_IN_METHOD_TEMPLATE = "$_ = $proceed($$); if(!this.equals($0)) ist.meic.pa.FunctionalProfiler.Register.addWriter($0.getClass().getName());";
+    /**
+     * This is the code template that checks if the instance that belongs to where this code is injected is not equals
+     * to the instance that a field belongs. It maintains the original code with the instruction proceed.
+     */
+    private static final String INCR_WRITER_IN_CONSTRUCTOR_TEMPLATE = "$_ = $proceed($$); if(!this.equals($0)) ist.meic.pa.FunctionalProfiler.Register.addWriter($0.getClass().getName());";
 
     /**
      * This is the code template that replaces a field write. It maintains the original code with the instruction
      * proceed.
      */
-    private static final String INCR_WRITER_TEMPLATE = "$_ = $proceed($$); ist.meic.pa.FunctionalProfiler.Register.addWriter($0.getClass().getName());";
+    private static final String INCR_WRITER_IN_METHOD_TEMPLATE = "$_ = $proceed($$); ist.meic.pa.FunctionalProfiler.Register.addWriter($0.getClass().getName());";
 
     /**
      * This is the code template that replaces a field read. It maintains the original code with the instruction
      * proceed.
      */
-    private static final String INCR_READER_TEMPLATE = "$_ = $proceed($$); ist.meic.pa.FunctionalProfiler.Register.addReader($0.getClass().getName());";
+    private static final String INCR_READER_IN_METHOD_TEMPLATE = "$_ = $proceed($$); ist.meic.pa.FunctionalProfiler.Register.addReader($0.getClass().getName());";
 
     public void start(ClassPool pool) throws NotFoundException, CannotCompileException {
     }
@@ -44,7 +45,7 @@ public class ProfilerTranslator implements Translator {
         for (CtConstructor ctConstructor : ctClass.getDeclaredConstructors()) {
             ctConstructor.instrument(new ExprEditor() {
                 public void edit(FieldAccess fa) throws CannotCompileException {
-                    replaceFieldAccessInConstructor(fa, FieldAccess::isStatic);
+                    replaceFieldAccessInConstructor(fa);
                 }
             });
         }
@@ -52,36 +53,39 @@ public class ProfilerTranslator implements Translator {
         for (CtMethod ctMethod : ctClass.getDeclaredMethods())
             ctMethod.instrument(new ExprEditor() {
                 public void edit(FieldAccess fa) throws CannotCompileException {
-                    replaceFieldAccess(fa, FieldAccess::isStatic);
+                    replaceFieldAccessInMethod(fa);
                 }
             });
 
     }
 
     /**
-     * Check if predicate is true. If so nothing is done. Otherwise the method will replace the code where fa is at.
-     * It will check if fa is writer or reader and replace the code with INCR_WRITER_TEMPLATE or INCR_READER_TEMPLATE
-     * respectively.
+     * This method is called when a FieldAccess fa is from a constructor.
      *
-     * @param fa                   FieldAccess that will be replaced
-     * @param fieldAccessPredicate Predicate to remove unwanted FieldAccess fa
+     * @param fa FieldAccess that will be replaced
      * @throws CannotCompileException Exception rethrown from the method replace of fa
      */
-    private static void replaceFieldAccess(FieldAccess fa, Predicate<FieldAccess> fieldAccessPredicate) throws CannotCompileException {
-        if (fieldAccessPredicate.test(fa))
+    private static void replaceFieldAccessInConstructor(FieldAccess fa) throws CannotCompileException {
+        if (fa.isStatic())
             return;
         if (fa.isWriter())
-            fa.replace(INCR_WRITER_TEMPLATE);
+            fa.replace(INCR_WRITER_IN_CONSTRUCTOR_TEMPLATE);
         else
-            fa.replace(INCR_READER_TEMPLATE);
+            fa.replace(INCR_READER_IN_METHOD_TEMPLATE);
     }
 
-    private static void replaceFieldAccessInConstructor(FieldAccess fa, Predicate<FieldAccess> fieldAccessPredicate) throws CannotCompileException {
-        if (fieldAccessPredicate.test(fa))
+    /**
+     * This method is called when a FieldAccess fa is from a method.
+     *
+     * @param fa FieldAccess that will be replaced
+     * @throws CannotCompileException Exception rethrown from the method replace of fa
+     */
+    private static void replaceFieldAccessInMethod(FieldAccess fa) throws CannotCompileException {
+        if (fa.isStatic())
             return;
         if (fa.isWriter())
-            fa.replace(INCR_WRITE_IN_METHOD_TEMPLATE);
+            fa.replace(INCR_WRITER_IN_METHOD_TEMPLATE);
         else
-            fa.replace(INCR_READER_TEMPLATE);
+            fa.replace(INCR_READER_IN_METHOD_TEMPLATE);
     }
 }

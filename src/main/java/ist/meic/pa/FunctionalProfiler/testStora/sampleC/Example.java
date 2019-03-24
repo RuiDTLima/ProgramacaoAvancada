@@ -1,22 +1,25 @@
 package ist.meic.pa.FunctionalProfiler.testStora.sampleC;
 
 interface Counter {
-    public int value();
-    public Counter advance();
+    int value();
+
+    Counter advance();
 }
 
 class ImperativeCounter implements Counter {
     int i;
 
     ImperativeCounter(int start) {
-	i = start;
+        i = start;
     }
+
     public int value() {
-	return i;
+        return i;
     }
+
     public Counter advance() {
-	i = i+1;
-	return this;
+        i = i + 1;
+        return this;
     }
 }
 
@@ -24,13 +27,15 @@ class FunctionalCounter implements Counter {
     int i;
 
     public FunctionalCounter(int start) {
-	i = start;
+        i = start;
     }
+
     public int value() {
-	return i;
+        return i;
     }
+
     public Counter advance() {
-	return new FunctionalCounter(i+1);
+        return new FunctionalCounter(i + 1);
     }
 }
 

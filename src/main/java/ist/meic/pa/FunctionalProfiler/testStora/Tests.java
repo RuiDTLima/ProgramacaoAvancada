@@ -222,22 +222,6 @@ class Car {
     int maxSpeed;
     float fuelCapacity;
 
-    static class Motor {
-        boolean on;
-        int maxSpeed;
-
-        Motor(Car c) {
-            on = false;
-            maxSpeed = c.maxSpeed;
-            c.maxSpeed = 200;
-        }
-
-        private void turnOn() {
-            on = true;
-            maxSpeed *= 2;
-        }
-    }
-
     Car(float fuelCapacity) {
         this.maxSpeed = 15;
         this.fuelCapacity = this.fuelCapacity + fuelCapacity;
@@ -253,6 +237,22 @@ class Car {
 
     void raiseMaxSpeed(int maxSpeed) {
         this.maxSpeed = maxSpeed;
+    }
+
+    static class Motor {
+        boolean on;
+        int maxSpeed;
+
+        Motor(Car c) {
+            on = false;
+            maxSpeed = c.maxSpeed;
+            c.maxSpeed = 200;
+        }
+
+        private void turnOn() {
+            on = true;
+            maxSpeed *= 2;
+        }
     }
 }
 
