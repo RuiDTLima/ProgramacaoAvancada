@@ -9,7 +9,7 @@ public class ProfilerTranslator implements Translator {
      * This is the code template that replaces a field writes. It maintains the original code with the instruction
      * proceed and checks if the field being accessed doesn't belong to a different object instance
      */
-    private static final String INCR_WRITER_IN_CONSTRUCTOR_TEMPLATE = "$_ = $proceed($$); if(!this.equals($0)) ist.meic.pa.FunctionalProfiler.Register.addWriter($0.getClass().getName());";
+    private static final String INCR_WRITER_IN_CONSTRUCTOR_TEMPLATE = "$_ = $proceed($$); if (this != $0) ist.meic.pa.FunctionalProfiler.Register.addWriter($0.getClass().getName());";
 
     /**
      * This is the code template that replaces a field read. It maintains the original code with the instruction

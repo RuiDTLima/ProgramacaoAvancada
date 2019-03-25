@@ -3,6 +3,7 @@ package ist.meic.pa.FunctionalProfilerExtended;
 import javassist.*;
 import javassist.expr.ExprEditor;
 import javassist.expr.FieldAccess;
+
 import java.util.Arrays;
 
 public class ProfilerTranslator implements Translator {
@@ -10,7 +11,7 @@ public class ProfilerTranslator implements Translator {
      * This is the code template that replaces a field writes. It maintains the original code with the instruction
      * proceed and checks if the field being accessed doesn't belong to a different object instance
      */
-    private static final String INCR_WRITER_IN_CONSTRUCTOR_TEMPLATE = "$_ = $proceed($$); if(!this.equals($0)) ist.meic.pa.FunctionalProfilerExtended.Register.addWriter($0.getClass().getName(), \"%s\");";
+    private static final String INCR_WRITER_IN_CONSTRUCTOR_TEMPLATE = "$_ = $proceed($$); if (this != $0) ist.meic.pa.FunctionalProfilerExtended.Register.addWriter($0.getClass().getName(), \"%s\");";
 
     /**
      * This is the code template that replaces a field read. It maintains the original code with the instruction
@@ -60,8 +61,9 @@ public class ProfilerTranslator implements Translator {
     /**
      * Analyse the constructors in <b>ctClass</b> to add the corresponding code template. A constructor will be ignored
      * if it contains the annotation <i>IgnoreInstrumentation</i>.
-     * @see <a href="ist.meic.pa.FunctionalProfilerExtended.IgnoreInstrumentation">IgnoreInstrumentation</a>
+     *
      * @param ctClass represents the class being analysed.
+     * @see <a href="ist.meic.pa.FunctionalProfilerExtended.IgnoreInstrumentation">IgnoreInstrumentation</a>
      */
     private void instrumentConstructor(CtClass ctClass) {
         Arrays.stream(ctClass.getDeclaredConstructors())
@@ -78,8 +80,9 @@ public class ProfilerTranslator implements Translator {
     /**
      * Analyse the methods in <b>ctClass</b> to add the corresponding code template. A method will be ignored
      * if it contains the annotation <i>IgnoreInstrumentation</i>.
-     * @see <a href="ist.meic.pa.FunctionalProfilerExtended.IgnoreInstrumentation">IgnoreInstrumentation</a>
+     *
      * @param ctClass represents the class being analysed.
+     * @see <a href="ist.meic.pa.FunctionalProfilerExtended.IgnoreInstrumentation">IgnoreInstrumentation</a>
      */
     private void instrumentsMethod(CtClass ctClass) {
         Arrays.stream(ctClass.getDeclaredMethods())
